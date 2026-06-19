@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { getCurrentProfile } from '@/lib/auth'
 import { signOut } from '@/app/login/actions'
 import { Button } from '@/components/ui/button'
+import { Logo } from '@/components/Logo'
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', managerOnly: false },
@@ -26,8 +27,8 @@ export default async function AppLayout({
     <div className="flex min-h-screen flex-col">
       <header className="border-b">
         <nav className="mx-auto flex max-w-6xl items-center gap-6 px-4 py-3">
-          <Link href="/dashboard" className="font-semibold">
-            TeamFlow
+          <Link href="/dashboard" aria-label="TeamFlow — accueil">
+            <Logo />
           </Link>
           <ul className="flex flex-1 items-center gap-4">
             {visibleNavItems.map((item) => (

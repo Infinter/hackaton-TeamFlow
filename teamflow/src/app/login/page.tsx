@@ -2,6 +2,7 @@
 
 import { useActionState } from 'react'
 import { Button } from '@/components/ui/button'
+import { Logo } from '@/components/Logo'
 import { signIn } from './actions'
 
 const inputClass =
@@ -14,7 +15,8 @@ export default function LoginPage() {
   >(signIn, null)
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-sm flex-col justify-center gap-8 px-4">
+    <main className="relative mx-auto flex min-h-screen max-w-sm flex-col justify-center gap-8 px-4">
+      <Logo className="absolute left-4 top-4" />
       <div>
         <h1 className="text-2xl font-semibold">TeamFlow</h1>
         <p className="mt-1 text-sm text-muted-foreground">
