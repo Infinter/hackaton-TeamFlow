@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+import { requireManager } from "@/lib/auth";
 import { getWorkload } from "@/lib/workload";
 import { resolvePeriod, buildPresets } from "@/lib/workload-period";
 import { WorkloadBar } from "@/components/workload/WorkloadBar";
@@ -11,6 +13,9 @@ export default async function WorkloadPage({
 }: {
   searchParams: Promise<{ from?: string; to?: string }>;
 }) {
+  const guard = await requireManager();
+  if (!guard.ok) redirect("/dashboard");
+
   const { from, to } = await searchParams;
   const now = new Date();
   const period = resolvePeriod(from, to, now);
@@ -77,5 +82,5 @@ export default async function WorkloadPage({
         )}
       </div>
     </section>
-  );
+  )
 }
