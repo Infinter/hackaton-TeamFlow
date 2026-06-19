@@ -37,3 +37,41 @@ export function resolvePeriod(
     to: isIso(to) ? to : fallback.to,
   };
 }
+
+// --- Presets de période (raccourcis cliquables) ---------------------------
+
+export type PeriodPreset = { key: string; label: string } & Period;
+
+function addDaysIso(iso: string, n: number): string {
+  const d = new Date(`${iso}T00:00:00`);
+  d.setDate(d.getDate() + n);
+  return toIsoDate(d);
+}
+
+// Raccourcis proposés dans le sélecteur de période.
+export function buildPresets(now: Date): PeriodPreset[] {
+  const week = defaultWeek(now);
+  const monthFrom = new Date(now.getFullYear(), now.getMonth(), 1);
+  const monthTo = new Date(now.getFullYear(), now.getMonth() + 1, 0); // dernier jour du mois
+  return [
+    { key: "week", label: "Cette semaine", ...week },
+    {
+      key: "next-week",
+      label: "Semaine prochaine",
+      from: addDaysIso(week.from, 7),
+      to: addDaysIso(week.to, 7),
+    },
+    {
+      key: "month",
+      label: "Ce mois-ci",
+      from: toIsoDate(monthFrom),
+      to: toIsoDate(monthTo),
+    },
+    {
+      key: "30d",
+      label: "30 prochains jours",
+      from: toIsoDate(now),
+      to: addDaysIso(toIsoDate(now), 29),
+    },
+  ];
+}
