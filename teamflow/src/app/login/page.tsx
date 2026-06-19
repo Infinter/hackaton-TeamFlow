@@ -15,54 +15,59 @@ export default function LoginPage() {
   >(signIn, null)
 
   return (
-    <main className="relative mx-auto flex min-h-screen max-w-sm flex-col justify-center gap-8 px-4">
-      <Logo className="absolute left-4 top-4" />
-      <div>
-        <h1 className="text-2xl font-semibold">TeamFlow</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Connectez-vous pour accéder à votre espace.
-        </p>
+    <main className="flex min-h-screen items-center justify-center bg-background px-4">
+      <div className="w-full max-w-sm rounded-xl border border-border bg-card p-8 shadow-lg">
+        <div className="mb-8">
+          <Logo />
+        </div>
+
+        <div className="mb-6">
+          <h1 className="text-xl font-semibold">Connexion</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Connectez-vous pour accéder à votre espace.
+          </p>
+        </div>
+
+        <form action={formAction} className="flex flex-col gap-4">
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="email" className="text-sm font-medium">
+              Adresse e-mail
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              required
+              autoComplete="email"
+              className={inputClass}
+              placeholder="manager@teamflow.dev"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="password" className="text-sm font-medium">
+              Mot de passe
+            </label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              required
+              autoComplete="current-password"
+              className={inputClass}
+              placeholder="••••••••"
+            />
+          </div>
+
+          {state !== null && (
+            <p className="text-sm text-destructive">{state.error}</p>
+          )}
+
+          <Button type="submit" disabled={isPending} className="w-full">
+            {isPending ? 'Connexion…' : 'Se connecter'}
+          </Button>
+        </form>
       </div>
-
-      <form action={formAction} className="flex flex-col gap-4">
-        <div className="flex flex-col gap-1.5">
-          <label htmlFor="email" className="text-sm font-medium">
-            Adresse e-mail
-          </label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            required
-            autoComplete="email"
-            className={inputClass}
-            placeholder="manager@teamflow.dev"
-          />
-        </div>
-
-        <div className="flex flex-col gap-1.5">
-          <label htmlFor="password" className="text-sm font-medium">
-            Mot de passe
-          </label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            required
-            autoComplete="current-password"
-            className={inputClass}
-            placeholder="••••••••"
-          />
-        </div>
-
-        {state !== null && (
-          <p className="text-sm text-destructive">{state.error}</p>
-        )}
-
-        <Button type="submit" disabled={isPending} className="w-full">
-          {isPending ? 'Connexion…' : 'Se connecter'}
-        </Button>
-      </form>
     </main>
   )
 }

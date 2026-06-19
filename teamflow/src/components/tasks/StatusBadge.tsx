@@ -2,8 +2,8 @@ type Status = 'todo' | 'in_progress' | 'done'
 
 const STATUS_CONFIG: Record<Status, { label: string; className: string }> = {
   todo:        { label: 'À faire',  className: 'bg-muted text-muted-foreground' },
-  in_progress: { label: 'En cours', className: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' },
-  done:        { label: 'Terminé',  className: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' },
+  in_progress: { label: 'En cours', className: 'bg-primary/15 text-primary' },
+  done:        { label: 'Terminé',  className: 'bg-success/15 text-success-foreground' },
 }
 
 export function StatusBadge({ status }: { status: Status }) {
