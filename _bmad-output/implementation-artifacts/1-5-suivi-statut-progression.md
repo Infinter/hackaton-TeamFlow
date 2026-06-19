@@ -1,6 +1,10 @@
+---
+baseline_commit: b3f3c799f28fa9f301c9ee04158654b43f6efa62
+---
+
 # Story 1.5: Suivi du statut & progression (FR5)
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -17,12 +21,12 @@ afin de **rendre mon avancement visible et tracé**.
 
 ## Tasks / Subtasks
 
-- [ ] Page détail (AC: #1, #2, #3)
-  - [ ] `src/app/(app)/tasks/[id]/page.tsx` (détail + section historique)
-- [ ] Server Action statut/progression (AC: #1, #2, #4)
-  - [ ] `src/app/(app)/tasks/actions.ts` → `updateStatus` (+ note), `logTaskEvent`, vérification de droits
-- [ ] Composant timeline (AC: #3)
-  - [ ] `src/components/history/TaskTimeline.tsx`
+- [x] Page détail (AC: #1, #2, #3)
+  - [x] `src/app/(app)/tasks/[id]/page.tsx` (détail + section historique)
+- [x] Server Action statut/progression (AC: #1, #2, #4)
+  - [x] `src/app/(app)/tasks/actions.ts` → `updateStatus` (+ note), `logTaskEvent`, vérification de droits
+- [x] Composant timeline (AC: #3)
+  - [x] `src/components/history/TaskTimeline.tsx`
 
 ## Dev Notes
 
@@ -50,4 +54,16 @@ afin de **rendre mon avancement visible et tracé**.
 
 ### Completion Notes List
 
+### Completion Notes List
+
+- `updateStatus` : RBAC isManager || isAssignee, double logTaskEvent (status_changed + progress_note si note présente)
+- `StatusUpdater` : boutons de sélection du statut + textarea note, useTransition + toast
+- `TaskTimeline` : composant serveur pur, join profiles!task_history_author_id_fkey
+- Page `[id]` : fetch task + history en Promise.all, StatusUpdater visible pour assigné ET manager
+
 ### File List
+
+- `src/app/(app)/tasks/actions.ts` — ajout `updateStatus`
+- `src/components/tasks/StatusUpdater.tsx` — nouveau
+- `src/components/history/TaskTimeline.tsx` — nouveau
+- `src/app/(app)/tasks/[id]/page.tsx` — mis à jour
