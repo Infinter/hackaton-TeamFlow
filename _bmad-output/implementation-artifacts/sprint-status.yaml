@@ -1,0 +1,32 @@
+# Sprint Status — TeamFlow (hackathon, 3 développeurs)
+# Généré par John (PM) le 2026-06-19
+#
+# STATUS DEFINITIONS:
+#   backlog       — story identifiée, fichier de contexte non encore créé
+#   ready-for-dev — fichier de story créé, prêt à être implémenté
+#   in-progress   — implémentation en cours
+#   review        — implémentation terminée, en revue
+#   done          — terminé et validé
+#
+# Répartition suggérée : Épique 1 → Dev A, Épique 2 → Dev B, Épique 3 → Dev C.
+# ⚠️ Story 1.1 (socle) à fusionner sur main AVANT le démarrage parallèle.
+
+last_updated: 2026-06-19
+
+development_status:
+  epic-1: in-progress
+  1-1-socle-technique: ready-for-dev
+  1-2-authentification-roles: ready-for-dev
+  1-3-creation-tache: ready-for-dev
+  1-4-portefeuille-filtrable: ready-for-dev
+  1-5-suivi-statut-progression: ready-for-dev
+
+  epic-2: backlog
+  2-1-affectation-reaffectation: ready-for-dev
+  2-2-planification-tache: ready-for-dev
+  2-3-tableau-glisser-deposer: ready-for-dev
+
+  epic-3: backlog
+  3-1-charge-agregee: ready-for-dev
+  3-2-surcharges-retards: ready-for-dev
+  3-3-avancement-global: ready-for-dev
