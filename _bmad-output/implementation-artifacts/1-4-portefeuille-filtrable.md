@@ -1,6 +1,10 @@
+---
+baseline_commit: 82914a53c7d100cde5112f379aab1369e4983db4
+---
+
 # Story 1.4 : Portefeuille filtrable
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -17,18 +21,18 @@ afin de **retrouver rapidement le travail qui m'intéresse**.
 
 ## Tasks / Subtasks
 
-- [ ] Composant `StatusBadge` (AC: #1)
-  - [ ] `src/components/tasks/StatusBadge.tsx` → badge coloré pour `todo | in_progress | done`
-- [ ] Page `tasks/page.tsx` — refonte avec liste, filtres et état vide (AC: #1, #2, #3, #4)
-  - [ ] `await searchParams` (Promise en Next.js 16) → extraire `status`, `assignee`, `priority`, `due_before`
-  - [ ] Requête Supabase avec jointure `profiles!tasks_assignee_id_fkey(full_name)` et filtres server-side
-  - [ ] Récupérer liste des profiles pour peupler le select assigné dans `TaskFilters`
-  - [ ] Afficher tableau de tâches (ou état vide) + passer props à `TaskFilters`
-  - [ ] Conserver le lien conditionnel "Nouvelle tâche" (manager uniquement)
-- [ ] Composant `TaskFilters` (AC: #2)
-  - [ ] `src/components/tasks/TaskFilters.tsx` → Client Component avec `useSearchParams` + `useRouter`
-  - [ ] Sélects : statut, assigné (UUID), priorité ; input date pour `due_before`
-  - [ ] `router.push` avec `URLSearchParams` mis à jour à chaque changement
+- [x] Composant `StatusBadge` (AC: #1)
+  - [x] `src/components/tasks/StatusBadge.tsx` → badge coloré pour `todo | in_progress | done`
+- [x] Page `tasks/page.tsx` — refonte avec liste, filtres et état vide (AC: #1, #2, #3, #4)
+  - [x] `await searchParams` (Promise en Next.js 16) → extraire `status`, `assignee`, `priority`, `due_before`
+  - [x] Requête Supabase avec jointure `profiles!tasks_assignee_id_fkey(full_name)` et filtres server-side
+  - [x] Récupérer liste des profiles pour peupler le select assigné dans `TaskFilters`
+  - [x] Afficher tableau de tâches (ou état vide) + passer props à `TaskFilters`
+  - [x] Conserver le lien conditionnel "Nouvelle tâche" (manager uniquement)
+- [x] Composant `TaskFilters` (AC: #2)
+  - [x] `src/components/tasks/TaskFilters.tsx` → Client Component avec `useSearchParams` + `useRouter`
+  - [x] Sélects : statut, assigné (UUID), priorité ; input date pour `due_before`
+  - [x] `router.push` avec `URLSearchParams` mis à jour à chaque changement
 
 ## Dev Notes
 
@@ -366,12 +370,31 @@ export default async function TasksPage({
 
 ### Agent Model Used
 
+claude-sonnet-4-6 (Dev Story Agent)
+
 ### Debug Log References
+
+- `npx tsc --noEmit` → ✅ 0 erreur
+- `npm run lint` → ✅ 0 erreur
+- `npm run build` → ✅ compilé (Turbopack, 1090ms) — `/tasks` en mode `ƒ Dynamic`
 
 ### Completion Notes List
 
+- **`StatusBadge.tsx`** : composant pur (pas de `'use client'`), 3 statuts avec couleurs Tailwind distinctes (muted / bleu / vert), compatible Server et Client Component.
+- **`TaskFilters.tsx`** : Client Component, `useSearchParams` + `useRouter` + `usePathname`, 4 filtres (statut, assigné, priorité, due_before) mis à jour via `URLSearchParams` → `router.push`. URL partageable, filtres restaurés au rechargement (AC#2).
+- **`tasks/page.tsx`** : `await searchParams` (Promise Next.js 16), requête Supabase avec jointure `profiles!tasks_assignee_id_fkey(full_name)` et 4 filtres server-side chainés. `Promise.all` pour les 3 lectures parallèles. Tableau avec `StatusBadge`, dates `Intl.DateTimeFormat('fr-FR')`, liens vers `/tasks/[id]`. État vide explicite (AC#3). Bouton "Nouvelle tâche" conservé pour managers (AC#4).
+
 ### File List
+
+- `teamflow/src/components/tasks/StatusBadge.tsx` — **NOUVEAU**
+- `teamflow/src/components/tasks/TaskFilters.tsx` — **NOUVEAU**
+- `teamflow/src/app/(app)/tasks/page.tsx` — **MODIFIÉ** (refonte complète)
+- `_bmad-output/implementation-artifacts/1-4-portefeuille-filtrable.md` — **MODIFIÉ** (story complétée)
+- `_bmad-output/implementation-artifacts/sprint-status.yaml` — **MODIFIÉ**
 
 ## Change Log
 
-- 2026-06-19 : Story créée par CS workflow (bmad-create-story).
+| Date | Changement |
+|---|---|
+| 2026-06-19 | Story créée par CS workflow (bmad-create-story). |
+| 2026-06-19 | Story 1.4 implémentée : StatusBadge, TaskFilters, tasks/page.tsx refondu avec liste filtrée. Build ✅ lint ✅ tsc ✅ |
