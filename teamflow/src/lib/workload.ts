@@ -35,3 +35,74 @@ export async function getWorkload(
 
   return (data ?? []) as WorkloadRow[];
 }
+
+// Une tâche en retard (échéance dépassée, non terminée). Voir `overdue_tasks()`
+// dans views_workload.sql. Déclaré localement pour la même raison que WorkloadRow
+// (bloc `Functions` de types.ts vide et read-only pour l'Épique 3).
+export type OverdueTask = {
+  id: string;
+  title: string;
+  due_date: string;
+  status: string;
+  assignee_id: string | null;
+  assignee_name: string | null;
+};
+
+// Lit les tâches en retard (FR7) : `due_date < current_date AND status <> 'done'`.
+// Indépendant de toute période — le retard est relatif à la date courante (côté SQL).
+// Frontière de données (AR10) : passe exclusivement par `lib/supabase/server`.
+export async function getOverdueTasks(): Promise<OverdueTask[]> {
+  const supabase = (await createClient()) as unknown as SupabaseClient;
+
+  const { data, error } = await supabase.rpc("overdue_tasks");
+
+  if (error) {
+    console.error("getOverdueTasks: échec RPC overdue_tasks", error);
+    return [];
+  }
+
+  return (data ?? []) as OverdueTask[];
+}
+
+// Avancement global du portefeuille (FR8). Voir `portfolio_progress()` dans
+// views_workload.sql. Comptes BRUTS (le ratio se calcule côté présentation via
+// `completionRate`, garde-fou division par zéro). Déclaré localement pour la même
+// raison que WorkloadRow (bloc `Functions` de types.ts vide et read-only Épique 3).
+export type PortfolioProgress = {
+  total_tasks: number;
+  done_tasks: number;
+  total_hours: number;
+  done_hours: number;
+};
+
+// Valeur neutre : portefeuille vide ou erreur RPC → tout à zéro (jamais de throw vers l'UI).
+const EMPTY_PROGRESS: PortfolioProgress = {
+  total_tasks: 0,
+  done_tasks: 0,
+  total_hours: 0,
+  done_hours: 0,
+};
+
+// Lit l'avancement global (FR8) sur l'ensemble du portefeuille. La RPC renvoie
+// toujours une ligne (agrégat sans GROUP BY) — on prend la première et on coerce
+// chaque champ en nombre. Frontière de données (AR10) : passe par `lib/supabase/server`.
+export async function getPortfolioProgress(): Promise<PortfolioProgress> {
+  const supabase = (await createClient()) as unknown as SupabaseClient;
+
+  const { data, error } = await supabase.rpc("portfolio_progress");
+
+  if (error) {
+    console.error("getPortfolioProgress: échec RPC portfolio_progress", error);
+    return EMPTY_PROGRESS;
+  }
+
+  const row = (data ?? [])[0];
+  if (!row) return EMPTY_PROGRESS;
+
+  return {
+    total_tasks: Number(row.total_tasks),
+    done_tasks: Number(row.done_tasks),
+    total_hours: Number(row.total_hours),
+    done_hours: Number(row.done_hours),
+  };
+}
