@@ -34,6 +34,22 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // ⚠️ TEMPORAIRE — DEV ONLY (à RETIRER quand la Story 1.2 « Authentification & rôles » sera mergée).
+  // Tant que le flux de login (1.2) n'existe pas, on ouvre automatiquement une session
+  // pour un compte de seed afin de pouvoir naviguer dans le groupe (app) et voir les
+  // données réelles. Gaté par env (DEV_AUTOLOGIN, défini dans .env.local non versionné) :
+  // sans le flag, comportement de prod normal (redirection /login). Sécurité DB inchangée.
+  if (!user && process.env.DEV_AUTOLOGIN === "true") {
+    await supabase.auth.signInWithPassword({
+      email: process.env.DEV_AUTOLOGIN_EMAIL ?? "manager@teamflow.dev",
+      password: process.env.DEV_AUTOLOGIN_PASSWORD ?? "Password123!",
+    });
+    // signInWithPassword a écrit les cookies de session (request + supabaseResponse) :
+    // on laisse passer la requête, la session est désormais établie.
+    return supabaseResponse;
+  }
+  // ⚠️ FIN DU BLOC TEMPORAIRE — DEV ONLY.
+
   const path = request.nextUrl.pathname;
   const isPublic = path === "/" || path.startsWith("/login");
 
