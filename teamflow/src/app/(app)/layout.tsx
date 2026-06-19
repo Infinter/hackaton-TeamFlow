@@ -1,15 +1,27 @@
-import Link from "next/link";
+import Link from 'next/link'
+import { redirect } from 'next/navigation'
+import { getCurrentProfile } from '@/lib/auth'
+import { signOut } from '@/app/login/actions'
+import { Button } from '@/components/ui/button'
 
 const navItems = [
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/tasks", label: "Tâches" },
-  { href: "/board", label: "Tableau" },
-  { href: "/workload", label: "Charge" },
-];
+  { href: '/dashboard', label: 'Dashboard', managerOnly: false },
+  { href: '/tasks', label: 'Tâches', managerOnly: false },
+  { href: '/board', label: 'Tableau', managerOnly: false },
+  { href: '/workload', label: 'Charge', managerOnly: true },
+]
 
-export default function AppLayout({
+export default async function AppLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const profile = await getCurrentProfile()
+  if (!profile) redirect('/login')
+  const isManager = profile.role === 'manager'
+
+  const visibleNavItems = navItems.filter(
+    (item) => !item.managerOnly || isManager,
+  )
+
   return (
     <div className="flex min-h-screen flex-col">
       <header className="border-b">
@@ -17,8 +29,8 @@ export default function AppLayout({
           <Link href="/dashboard" className="font-semibold">
             TeamFlow
           </Link>
-          <ul className="flex items-center gap-4">
-            {navItems.map((item) => (
+          <ul className="flex flex-1 items-center gap-4">
+            {visibleNavItems.map((item) => (
               <li key={item.href}>
                 <Link
                   href={item.href}
@@ -29,11 +41,16 @@ export default function AppLayout({
               </li>
             ))}
           </ul>
+          <form action={signOut}>
+            <Button type="submit" variant="ghost" size="sm">
+              Déconnexion
+            </Button>
+          </form>
         </nav>
       </header>
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6">
         {children}
       </main>
     </div>
-  );
+  )
 }
