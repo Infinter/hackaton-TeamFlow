@@ -11,7 +11,7 @@
 # Répartition suggérée : Épique 1 → Dev A, Épique 2 → Dev B, Épique 3 → Dev C.
 # ⚠️ Story 1.1 (socle) à fusionner sur main AVANT le démarrage parallèle.
 
-last_updated: 2026-06-19  # updated for story 2.2 in-progress
+last_updated: 2026-06-19  # story 3.3 implemented → review
 
 development_status:
   epic-1: in-progress
@@ -28,5 +28,5 @@ development_status:
 
   epic-3: in-progress
   3-1-charge-agregee: review
-  3-2-surcharges-retards: ready-for-dev
-  3-3-avancement-global: ready-for-dev
+  3-2-surcharges-retards: review
+  3-3-avancement-global: review

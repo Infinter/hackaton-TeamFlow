@@ -1,4 +1,7 @@
 import type { WorkloadRow } from "@/lib/workload";
+import { isOverloaded } from "@/lib/workload-status";
+import { OverloadFlag } from "@/components/workload/OverloadFlag";
+import { cn } from "@/lib/utils";
 
 // Palette de dégradés (CSS inline → robuste quelle que soit la version de Tailwind v4,
 // et indépendante du thème neutre du projet). Couleur déterministe par position.
@@ -20,11 +23,16 @@ function initials(name: string): string {
     .join("");
 }
 
+// Couleur d'alerte de surcharge (FR7, AC#1) — remplace le dégradé décoratif quand
+// le collaborateur dépasse sa capacité.
+const OVERLOAD_FILL = { from: "#ef4444", to: "#dc2626" }; // red-500 → red-600
+
 // Carte de charge d'un collaborateur : avatar initiales, barre de progression
 // (charge / capacité) et badge d'occupation. Présentational (Server Component) :
 // reçoit les données en props, ne lit jamais la DB.
-// NB : la mise en évidence des surcharges (couleur d'alerte, FR7) relève de la Story 3.2 —
-// ici la couleur reste décorative (par collaborateur), pas un signal de surcharge.
+// Surcharge (FR7, AC#1) : quand `total_load_hours > weekly_capacity_hours`, la barre
+// passe en couleur d'alerte + badge `OverloadFlag`. État sain (AC#3) : rendu neutre,
+// couleur décorative par collaborateur, aucun signal.
 export function WorkloadBar({
   row,
   index = 0,
@@ -37,10 +45,16 @@ export function WorkloadBar({
   const ratio = capacity > 0 ? load / capacity : 0;
   const pct = Math.round(ratio * 100);
   const fillPct = Math.min(ratio, 1) * 100;
-  const { from, to } = PALETTE[index % PALETTE.length];
+  const over = isOverloaded(row);
+  const { from, to } = over ? OVERLOAD_FILL : PALETTE[index % PALETTE.length];
 
   return (
-    <div className="flex items-center gap-4 rounded-xl border bg-card p-4 shadow-sm transition-shadow hover:shadow-md">
+    <div
+      className={cn(
+        "flex items-center gap-4 rounded-xl border bg-card p-4 shadow-sm transition-shadow hover:shadow-md",
+        over && "border-red-200 bg-red-50/40",
+      )}
+    >
       <div
         className="flex size-11 shrink-0 items-center justify-center rounded-full text-sm font-semibold text-white shadow-inner"
         style={{ backgroundImage: `linear-gradient(135deg, ${from}, ${to})` }}
@@ -51,7 +65,10 @@ export function WorkloadBar({
 
       <div className="min-w-0 flex-1 space-y-1.5">
         <div className="flex items-baseline justify-between gap-2">
-          <span className="truncate font-medium">{row.full_name}</span>
+          <span className="flex min-w-0 items-center gap-2">
+            <span className="truncate font-medium">{row.full_name}</span>
+            <OverloadFlag load={load} capacity={capacity} className="shrink-0" />
+          </span>
           <span className="shrink-0 text-sm text-muted-foreground">
             <span className="font-semibold text-foreground tabular-nums">
               {load}
@@ -78,7 +95,12 @@ export function WorkloadBar({
       </div>
 
       <div className="shrink-0 text-right">
-        <div className="text-lg font-semibold tabular-nums leading-none">
+        <div
+          className={cn(
+            "text-lg font-semibold tabular-nums leading-none",
+            over && "text-red-600",
+          )}
+        >
           {pct}%
         </div>
         <div className="mt-1 text-xs text-muted-foreground">occupation</div>
