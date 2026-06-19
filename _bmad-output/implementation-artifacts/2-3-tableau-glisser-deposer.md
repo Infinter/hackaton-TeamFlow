@@ -1,6 +1,10 @@
+---
+baseline_commit: 198ede24e597fcf368ace62fe6fad69bea53dd9d
+---
+
 # Story 2.3: Tableau d'affectation par glisser-déposer (FR9, NFR1)
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -20,12 +24,12 @@ afin d'**ajuster la répartition rapidement et voir l'impact immédiat**.
 
 ## Tasks / Subtasks
 
-- [ ] Page tableau (AC: #1)
-  - [ ] `src/app/(app)/board/page.tsx` (lecture tâches + profils)
-- [ ] Composants dnd (AC: #1, #2, #4)
-  - [ ] `src/components/board/TaskBoard.tsx` (@dnd-kit, `useOptimistic`), `DroppableColumn.tsx`
-- [ ] Server Action (AC: #2, #3, #5)
-  - [ ] `src/app/(app)/board/actions.ts` → `reassignTask` (optimiste, `logTaskEvent('reassigned')`, `requireManager()`, `revalidatePath`)
+- [x] Page tableau (AC: #1)
+  - [x] `src/app/(app)/board/page.tsx` (lecture tâches + profils)
+- [x] Composants dnd (AC: #1, #2, #4)
+  - [x] `src/components/board/TaskBoard.tsx` (@dnd-kit, `useOptimistic`), `DroppableColumn.tsx`
+- [x] Server Action (AC: #2, #3, #5)
+  - [x] `src/app/(app)/board/actions.ts` → `reassignTask` (optimiste, `logTaskEvent('reassigned')`, `requireManager()`, `revalidatePath`)
 
 ## Dev Notes
 
@@ -49,8 +53,31 @@ afin d'**ajuster la répartition rapidement et voir l'impact immédiat**.
 
 ### Agent Model Used
 
+claude-sonnet-4-6 (Dev Story Agent)
+
 ### Debug Log References
+
+- `npx tsc --noEmit` → ✅ 0 erreur
+- `npm run lint` → ✅ 0 erreur
+- `npm run build` → ✅ compilé (Turbopack, 1199ms) — `/board` en mode `ƒ Dynamic`
 
 ### Completion Notes List
 
+- **`board/actions.ts`** : `reassignTask` — `requireManager()` → lecture `assignee_id` courant → UPDATE → `logTaskEvent('reassigned', { old, new })` → `revalidatePath` sur `/board`, `/tasks`, `/tasks/[id]`.
+- **`TaskBoard.tsx`** : Client Component, `DndContext` (@dnd-kit/core 6.3.1), `useOptimistic` sur le tableau plat de tâches (reducer : remap `assignee_id`), `useTransition` autour de `reassignTask`. Rollback automatique à la fin de la transition si erreur serveur + toast sonner (AC#4).
+- **`DroppableColumn.tsx`** : `useDroppable` par colonne (id = collaborateur ou `'unassigned'`). `DraggableTaskCard` inline dans le même fichier : `useDraggable` avec `disabled={!isManager}` (AC#5). Lien vers `/tasks/[id]` conservé.
+- **`board/page.tsx`** : remplace l'ancienne liste `AssigneeSelector` par `TaskBoard`. Colonnes triées par `full_name`. Tâches non assignées ou dont l'assigné n'est pas collaborateur → colonne "Non assigné".
+- **AC#3 (NFR1 < 2s)** : garanti par `useOptimistic` (impact immédiat côté client) + `revalidatePath` pour réconciliation serveur.
+
 ### File List
+
+- `teamflow/src/app/(app)/board/actions.ts` — **NOUVEAU** (Server Action `reassignTask`)
+- `teamflow/src/app/(app)/board/page.tsx` — **MODIFIÉ** (passe à TaskBoard, supprime AssigneeSelector)
+- `teamflow/src/components/board/TaskBoard.tsx` — **NOUVEAU** (DndContext + useOptimistic)
+- `teamflow/src/components/board/DroppableColumn.tsx` — **NOUVEAU** (useDroppable + DraggableTaskCard)
+
+## Change Log
+
+| Date | Changement |
+|---|---|
+| 2026-06-19 | Story 2.3 implémentée : reassignTask (board/actions.ts), TaskBoard (DndContext + useOptimistic), DroppableColumn + DraggableTaskCard, board/page.tsx migré vers kanban. Build ✅ lint ✅ tsc ✅ |
